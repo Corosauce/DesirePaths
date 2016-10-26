@@ -1,12 +1,10 @@
 package com.corosus.desirepaths;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -27,8 +25,13 @@ public class EventHandlerForge {
 		
 		if (!ent.worldObj.isRemote) {
 			if (ent.worldObj.getTotalWorldTime() % walkOnRate == 0) {
+				//TODO: fix for players, probably broken due to player server side not having motion data
 				double speed = Math.sqrt(ent.motionX * ent.motionX + ent.motionY * ent.motionY + ent.motionZ * ent.motionZ);
 				if (speed > 0.08) {
+
+					/*if (ent instanceof EntityPlayer) {
+						System.out.println("durr");
+					}*/
 					//System.out.println(entityId + " - speed: " + speed);
 					int newX = MathHelper.floor_double(ent.posX);
 					int newY = MathHelper.floor_double(ent.getEntityBoundingBox().minY - 1);

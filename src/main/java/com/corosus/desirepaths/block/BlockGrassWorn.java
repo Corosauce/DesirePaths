@@ -97,7 +97,14 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
 	@Override
 	public int colorMultiplier(IBlockState state, IBlockAccess worldIn,
 			BlockPos pos, int tintIndex) {
-		return BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
+		try {
+			return BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
+		} catch (Exception e) {
+			// TODO: fix exception for NPE at "at net.minecraft.world.biome.BiomeColorHelper.getColorAtPos(BiomeColorHelper.java:39)"
+			e.printStackTrace();
+			return 0;
+		}
+		
 	}
 
     /*protected BlockStateContainer createBlockState()
