@@ -10,6 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import CoroUtil.util.CoroUtilPlayer;
+import CoroUtil.util.Vec3;
 import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
 
@@ -24,9 +26,14 @@ public class EventHandlerForge {
 		int walkOnRate = 5;
 		
 		if (!ent.worldObj.isRemote) {
-			if (ent.worldObj.getTotalWorldTime() % walkOnRate == 0) {
+			if (ent.onGround && ent.worldObj.getTotalWorldTime() % walkOnRate == 0) {
 				//TODO: fix for players, probably broken due to player server side not having motion data
 				double speed = Math.sqrt(ent.motionX * ent.motionX + ent.motionY * ent.motionY + ent.motionZ * ent.motionZ);
+				if (ent instanceof EntityPlayer) {
+					Vec3 vec = CoroUtilPlayer.getPlayerSpeedCapped((EntityPlayer) ent, 0.1F);
+					speed = Math.sqrt(vec.xCoord * vec.xCoord + vec.yCoord * vec.yCoord + vec.zCoord * vec.zCoord);
+					//System.out.println("player speed: " + speed);
+				}
 				if (speed > 0.08) {
 
 					/*if (ent instanceof EntityPlayer) {

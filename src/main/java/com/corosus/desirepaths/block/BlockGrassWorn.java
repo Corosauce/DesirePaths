@@ -101,6 +101,7 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
 			return BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
 		} catch (Exception e) {
 			// TODO: fix exception for NPE at "at net.minecraft.world.biome.BiomeColorHelper.getColorAtPos(BiomeColorHelper.java:39)"
+			//reproduce by jump landing on block
 			e.printStackTrace();
 			return 0;
 		}
