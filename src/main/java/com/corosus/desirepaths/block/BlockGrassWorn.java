@@ -83,7 +83,7 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
     @SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer()
     {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+        return BlockRenderLayer.CUTOUT;
     }
 
     /**
