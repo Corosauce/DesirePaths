@@ -1,19 +1,31 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "desirepaths:blocks/grass_worn_3"
+    "foliage": "desirepaths:blocks/grass_worn_3",
+    "dirt": "desirepaths:blocks/dirt"
   },
   "elements": [
-        {   "from": [ 0, 0, 0 ],
-            "to": [ 16, 16, 16 ],
-            "faces": {
-                "up":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 },
-				"north":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 },
-				"east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 },
-				"south":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 },
-				"west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 },
-				"down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#all", "tintindex": 0 }
-            }
-        }
-    ]
+    {   "from": [ 0, 0, 0 ],
+      "to": [ 16, 15.99, 16 ],
+      "faces": {
+        "up":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
+        "north":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
+        "south":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" }
+      }
+    },
+    {   "from": [ 0, 15.99, 0 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "up":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },
+        "north":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },
+        "south":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 }
+      }
+    }
+  ]
 }
