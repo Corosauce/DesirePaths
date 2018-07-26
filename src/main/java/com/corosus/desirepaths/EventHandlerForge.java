@@ -25,8 +25,8 @@ public class EventHandlerForge {
 		EntityLivingBase ent = event.getEntityLiving();
 		int walkOnRate = 5;
 		
-		if (!ent.worldObj.isRemote) {
-			if (ent.onGround && ent.worldObj.getTotalWorldTime() % walkOnRate == 0) {
+		if (!ent.world.isRemote) {
+			if (ent.onGround && ent.world.getTotalWorldTime() % walkOnRate == 0) {
 				//TODO: fix for players, probably broken due to player server side not having motion data
 				double speed = Math.sqrt(ent.motionX * ent.motionX + ent.motionY * ent.motionY + ent.motionZ * ent.motionZ);
 				if (ent instanceof EntityPlayer) {
@@ -40,10 +40,10 @@ public class EventHandlerForge {
 						System.out.println("durr");
 					}*/
 					//System.out.println(entityId + " - speed: " + speed);
-					int newX = MathHelper.floor_double(ent.posX);
-					int newY = MathHelper.floor_double(ent.getEntityBoundingBox().minY - 1);
-					int newZ = MathHelper.floor_double(ent.posZ);
-					IBlockState state = ent.worldObj.getBlockState(new BlockPos(newX, newY, newZ));
+					int newX = MathHelper.floor(ent.posX);
+					int newY = MathHelper.floor(ent.getEntityBoundingBox().minY - 1);
+					int newZ = MathHelper.floor(ent.posZ);
+					IBlockState state = ent.world.getBlockState(new BlockPos(newX, newY, newZ));
 					Block id = state.getBlock();
 					
 					//check for block that can have beaten path data
@@ -64,7 +64,7 @@ public class EventHandlerForge {
 					Block blockNext = DesirePaths.listDegradeProgression.get(index+1);
 					
 					//if (id == Blocks.GRASS) {
-						BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(ent.worldObj).getBlockData(newX, newY, newZ);// ServerTickHandler.wd.getBlockDataGrid(worldObj).getBlockData(newX, newY, newZ);
+						BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(ent.world).getBlockData(newX, newY, newZ);// ServerTickHandler.wd.getBlockDataGrid(world).getBlockData(newX, newY, newZ);
 						
 						//add depending on a weight?
 						bdp.walkedOnAmount += 0.25F;
@@ -73,21 +73,21 @@ public class EventHandlerForge {
 						
 						if (bdp.walkedOnAmount > 1F) {
 							//System.out.println("dirt!!!");
-							IBlockState stateUp = ent.worldObj.getBlockState(new BlockPos(newX, newY+1, newZ));
+							IBlockState stateUp = ent.world.getBlockState(new BlockPos(newX, newY+1, newZ));
 							if (true/*stateUp.getBlock() == Blocks.AIR || stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE*/) {
-								ent.worldObj.setBlockState(new BlockPos(newX, newY, newZ), blockNext.getDefaultState());
+								ent.world.setBlockState(new BlockPos(newX, newY, newZ), blockNext.getDefaultState());
 								//if past first stage of trample, also take out the plant above
 								if (index >= 4) {
 									if (stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE) {
-										ent.worldObj.setBlockState(new BlockPos(newX, newY+1, newZ), Blocks.AIR.getDefaultState());
+										ent.world.setBlockState(new BlockPos(newX, newY+1, newZ), Blocks.AIR.getDefaultState());
 									}
 								}
 							}
 							
 							//BlockRegistry.dirtPath.blockID);
 							//cleanup for memory
-							WorldDirectorManager.instance().getBlockDataGrid(ent.worldObj).removeBlockData(newX, newY, newZ);
-							//ServerTickHandler.wd.getBlockDataGrid(worldObj).removeBlockData(newX, newY, newZ);
+							WorldDirectorManager.instance().getBlockDataGrid(ent.world).removeBlockData(newX, newY, newZ);
+							//ServerTickHandler.wd.getBlockDataGrid(world).removeBlockData(newX, newY, newZ);
 						}
 					//}
 				}

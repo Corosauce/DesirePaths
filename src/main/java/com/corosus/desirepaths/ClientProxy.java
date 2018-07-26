@@ -1,5 +1,7 @@
 package com.corosus.desirepaths;
 
+import CoroUtil.block.BlockBlank;
+import CoroUtil.forge.CoroUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -7,6 +9,8 @@ import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -32,12 +36,14 @@ public class ClientProxy extends CommonProxy
     	Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((IBlockColor)DesirePaths.dirt_6, DesirePaths.dirt_6);
     	
     }
-    
+
     @Override
-    public void addBlock(Block parBlock, String unlocalizedName, String blockNameBase) {
-    	super.addBlock(parBlock, unlocalizedName, blockNameBase);
-    	
-    	registerItem(Item.getItemFromBlock(parBlock), 0, new ModelResourceLocation(DesirePaths.MODID + ":" + unlocalizedName, "inventory"));
+    public void addBlock(RegistryEvent.Register<Block> event, Block parBlock, String unlocalizedName) {
+        super.addBlock(event, parBlock, unlocalizedName);
+
+        if (!(parBlock instanceof BlockBlank)) {
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(parBlock), 0, new ModelResourceLocation(CoroUtil.modID + ":" + unlocalizedName, "inventory"));
+        }
     }
     
     public void registerItem(Item item, int meta, ModelResourceLocation location) {
