@@ -24,6 +24,8 @@ public class EventHandlerForge {
 		
 		EntityLivingBase ent = event.getEntityLiving();
 		int walkOnRate = 5;
+
+		//IDEA: detect landing from jump or fall for additional wear
 		
 		if (!ent.world.isRemote) {
 			if (ent.onGround && ent.world.getTotalWorldTime() % walkOnRate == 0) {
