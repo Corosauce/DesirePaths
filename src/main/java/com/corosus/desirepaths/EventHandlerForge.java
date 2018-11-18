@@ -72,7 +72,7 @@ public class EventHandlerForge {
 						BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(ent.world).getBlockData(newX, newY, newZ);// ServerTickHandler.wd.getBlockDataGrid(world).getBlockData(newX, newY, newZ);
 						
 						//add depending on a weight?
-						bdp.walkedOnAmount += 0.25F;
+						bdp.walkedOnAmount += 0.05F;
 						
 						//System.out.println("inc walk amount: " + bdp.walkedOnAmount);
 						

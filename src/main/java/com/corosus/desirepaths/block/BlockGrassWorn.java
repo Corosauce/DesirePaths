@@ -69,7 +69,7 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
 
         //CULog.dbg("dbg: " + curTickTime + " - " + bdp.lastTickTimeGrass + " = " + timeSinceLastTick);
 
-        long timeTo1StageOfRegrowth = 20*60*5;
+        long timeTo1StageOfRegrowth = 20*60*30;
         float oneStageOfRegrowth = 1F;
 
         float scale = (float)timeSinceLastTick / (float)timeTo1StageOfRegrowth;
@@ -80,9 +80,9 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         bdp.walkedOnAmount -= amountToAdjust;
 
 
-        if (bdp.walkedOnAmount < -1) {
+        //if (bdp.walkedOnAmount < -1) {
             CULog.dbg("decr walk by " + amountToAdjust + " to " + bdp.walkedOnAmount);
-        }
+        //}
 
         if (bdp.walkedOnAmount <= 0) {
 
