@@ -16,17 +16,15 @@ public class DesirePaths
     public static final String MODID = "desirepaths";
     public static final String VERSION = "1.0";
     
-    public static Block dirt_6;
+    public static Block dirt_6; //fully worn (our custom dirt)
     public static Block dirt_5;
     public static Block dirt_4;
     public static Block dirt_3;
     public static Block dirt_2;
-    public static Block dirt_1;
+    public static Block dirt_1; //barely worn
     
     @SidedProxy(clientSide = "com.corosus.desirepaths.ClientProxy", serverSide = "com.corosus.desirepaths.CommonProxy")
     public static CommonProxy proxy;
-    
-    public static List<Block> listDegradeProgression = new ArrayList<Block>();
     
     @EventHandler
     public void init(FMLInitializationEvent event)

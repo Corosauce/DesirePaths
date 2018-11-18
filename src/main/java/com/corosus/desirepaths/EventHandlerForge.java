@@ -1,5 +1,6 @@
 package com.corosus.desirepaths;
 
+import com.corosus.desirepaths.block.BlockGrassWorn;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -46,25 +47,27 @@ public class EventHandlerForge {
 					int newY = MathHelper.floor(ent.getEntityBoundingBox().minY - 1);
 					int newZ = MathHelper.floor(ent.posZ);
 					IBlockState state = ent.world.getBlockState(new BlockPos(newX, newY, newZ));
-					Block id = state.getBlock();
+					Block block = state.getBlock();
 					
 					//check for block that can have beaten path data
+					//TODO: switch to a hashmap for faster conversion
 					int index = -1;
-					for (int i = 0; i < DesirePaths.listDegradeProgression.size(); i++) {
+					if (BlockGrassWorn.lookupBlockToStage.containsKey(block)) {
+						index = BlockGrassWorn.lookupBlockToStage.get(block);
+					}
+					/*for (int i = 0; i < DesirePaths.listDegradeProgression.size(); i++) {
 						Block block = DesirePaths.listDegradeProgression.get(i);
 						if (id == block) {
 							index = i;
 							break;
 						}
-					}
+					}*/
 					
 					//if invalid or last entry in list
-					if (index == -1 || index == DesirePaths.listDegradeProgression.size() -1) {
+					if (index == -1 || index == BlockGrassWorn.lookupBlockToStage.size() - 1) {
 						return;
 					}
-					
-					Block blockNext = DesirePaths.listDegradeProgression.get(index+1);
-					
+
 					//if (id == Blocks.GRASS) {
 						BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(ent.world).getBlockData(newX, newY, newZ);// ServerTickHandler.wd.getBlockDataGrid(world).getBlockData(newX, newY, newZ);
 						
@@ -75,20 +78,31 @@ public class EventHandlerForge {
 						
 						if (bdp.walkedOnAmount > 1F) {
 							//System.out.println("dirt!!!");
-							IBlockState stateUp = ent.world.getBlockState(new BlockPos(newX, newY+1, newZ));
-							if (true/*stateUp.getBlock() == Blocks.AIR || stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE*/) {
+
+							BlockGrassWorn.decaySlowly(ent.world, block, new BlockPos(newX, newY, newZ));
+
+							/*IBlockState stateUp = ent.world.getBlockState(new BlockPos(newX, newY+1, newZ));
+							if (true*//*stateUp.getBlock() == Blocks.AIR || stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE*//*) {
+								Block blockNext = DesirePaths.listDegradeProgression.get(index+1);
 								ent.world.setBlockState(new BlockPos(newX, newY, newZ), blockNext.getDefaultState());
 								//if past first stage of trample, also take out the plant above
 								if (index >= 4) {
 									if (stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE) {
+										//maybe let it "pop off"?
 										ent.world.setBlockState(new BlockPos(newX, newY+1, newZ), Blocks.AIR.getDefaultState());
 									}
 								}
-							}
+							}*/
+
+							//reset walked on amount since its a new block state
+							bdp.walkedOnAmount = 0;
+							//update time since last tick as this would count as a tick
+							bdp.lastTickTimeGrass = ent.world.getTotalWorldTime();
 							
 							//BlockRegistry.dirtPath.blockID);
 							//cleanup for memory
-							WorldDirectorManager.instance().getBlockDataGrid(ent.world).removeBlockData(newX, newY, newZ);
+							//- maybe pointless here since we are counting lastTickTimeGrass as important data
+							WorldDirectorManager.instance().getBlockDataGrid(ent.world).removeBlockDataIfRemovable(newX, newY, newZ);
 							//ServerTickHandler.wd.getBlockDataGrid(world).removeBlockData(newX, newY, newZ);
 						}
 					//}

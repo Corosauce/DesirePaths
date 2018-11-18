@@ -35,14 +35,28 @@ public class CommonProxy
 		DesirePaths.proxy.addBlock(event, DesirePaths.dirt_1 = new BlockGrassWorn(), "grass_worn_1");
 
 
-		DesirePaths.listDegradeProgression.clear();
-		DesirePaths.listDegradeProgression.add(Blocks.GRASS);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_1);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_2);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_3);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_4);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_5);
-		DesirePaths.listDegradeProgression.add(DesirePaths.dirt_6);
+		BlockGrassWorn.listDegradeProgression.clear();
+		BlockGrassWorn.listDegradeProgression.add(Blocks.GRASS);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_1);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_2);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_3);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_4);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_5);
+		BlockGrassWorn.listDegradeProgression.add(DesirePaths.dirt_6);
+
+		BlockGrassWorn.lookupBlockToStage.clear();
+		addToLookup(Blocks.GRASS, 0);
+		addToLookup(DesirePaths.dirt_1, 1);
+		addToLookup(DesirePaths.dirt_2, 2);
+		addToLookup(DesirePaths.dirt_3, 3);
+		addToLookup(DesirePaths.dirt_4, 4);
+		addToLookup(DesirePaths.dirt_5, 5);
+		addToLookup(DesirePaths.dirt_6, 6);
+	}
+
+	public static void addToLookup(Block block, int id) {
+		BlockGrassWorn.lookupBlockToStage.put(block, id);
+		BlockGrassWorn.lookupStageToBlock.put(id, block);
 	}
 
 	public void addBlock(RegistryEvent.Register<Block> event, Block parBlock, String unlocalizedName) {
