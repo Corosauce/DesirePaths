@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import CoroUtil.forge.CULog;
 import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
+import com.corosus.desirepaths.CommonProxy;
 import com.corosus.desirepaths.DesirePaths;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirt;
@@ -55,66 +56,96 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         return state.withProperty(SNOWY, Boolean.valueOf(block == Blocks.SNOW || block == Blocks.SNOW_LAYER));
     }*/
 
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
 
-        //CULog.dbg("rand tick");
+        if (!worldIn.isRemote) {
+            //CULog.dbg("rand tick");
 
-        BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(worldIn).getBlockData(pos.getX(), pos.getY(), pos.getZ());
-        //bdp.tickUpdate();
-        long curTickTime = worldIn.getTotalWorldTime();
+            if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+                for (int i = 0; i < 4; ++i) {
+                    BlockPos blockpos = pos.add(rand.nextInt(3) - 1, rand.nextInt(3) - 1, rand.nextInt(3) - 1);
 
-        //used as a baseline to scale based on time between random ticks
-        long timeSinceLastTick = curTickTime - bdp.lastTickTimeGrass;
+                    if (blockpos.getY() >= 0 && blockpos.getY() < 256 && !worldIn.isBlockLoaded(blockpos)) {
+                        continue;
+                    }
 
-        //CULog.dbg("dbg: " + curTickTime + " - " + bdp.lastTickTimeGrass + " = " + timeSinceLastTick);
+                    IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
+                    Block block = iblockstate1.getBlock();
 
-        long timeTo1StageOfRegrowth = 20*60*30;
-        float oneStageOfRegrowth = 1F;
+                    //if near block is grass or one of our more grass like blocks (but not the more dirt like ones
+                    if (block == Blocks.GRASS
+                            || block == DesirePaths.dirt_1
+                            || block == DesirePaths.dirt_2
+                            || block == DesirePaths.dirt_3)
+                    {
+                        BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(worldIn).getBlockData(pos.getX(), pos.getY(), pos.getZ());
+                        //bdp.tickUpdate();
+                        long curTickTime = worldIn.getTotalWorldTime();
 
-        float scale = (float)timeSinceLastTick / (float)timeTo1StageOfRegrowth;
+                        //used as a baseline to scale based on time between random ticks
+                        long timeSinceLastTick = curTickTime - bdp.lastTickTimeGrass;
 
-        float amountToAdjust = oneStageOfRegrowth * scale;
+                        //CULog.dbg("dbg: " + curTickTime + " - " + bdp.lastTickTimeGrass + " = " + timeSinceLastTick);
 
-        //code that scales based on ticktime diff goes here
-        bdp.walkedOnAmount -= amountToAdjust;
+                        long timeTo1StageOfRegrowth = 20 * 60 * 60 * 3;
+                        float oneStageOfRegrowth = 1F;
+
+                        float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
+
+                        float amountToAdjust = oneStageOfRegrowth * scale;
+
+                        //code that scales based on ticktime diff goes here
+                        bdp.walkedOnAmount -= amountToAdjust;
 
 
-        //if (bdp.walkedOnAmount < -1) {
-            CULog.dbg("decr walk by " + amountToAdjust + " to " + bdp.walkedOnAmount);
-        //}
+                        //if (bdp.walkedOnAmount < -1) {
+                        CULog.dbg("decr walk by " + amountToAdjust + " to " + bdp.walkedOnAmount);
+                        //}
 
-        if (bdp.walkedOnAmount <= 0) {
+                        if (bdp.walkedOnAmount <= 0) {
 
-            //GROW!!!
-            growSlowly(worldIn, state.getBlock(), pos);
+                            //GROW!!!
+                            growSlowly(worldIn, state.getBlock(), pos);
 
-            bdp.walkedOnAmount = 0;
+                            //reset to nearly full walked on so it has to tick down the value again
+                            //but dont se it to 1 or really close so if something walks on it it wont insta wear it down to next state
+                            bdp.walkedOnAmount = 0.90F;
 
-            IBlockState stateNew = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+                            IBlockState stateNew = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 
-            //if it fully regrew
-            if (stateNew.getBlock() == Blocks.GRASS) {
+                            //if it fully regrew
+                            if (stateNew.getBlock() == Blocks.GRASS) {
 
-                //random chance to regrow tallgrass above
-                if (rand.nextInt(5) == 0) {
-                    IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()));
-                    if (stateUp.getMaterial() == Material.AIR) {
-                        worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()), Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+                                //random chance to regrow tallgrass above
+                                if (rand.nextInt(5) == 0) {
+                                    IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()));
+                                    if (stateUp.getMaterial() == Material.AIR) {
+                                        worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()), Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+                                    }
+                                }
+
+                                //now that its fully restored to vanilla grass, lets blank out this data too to allow removeBlockDataIfRemovable to do its job
+                                bdp.lastTickTimeGrass = 0;
+
+                                //valid only when we are setting it to grass
+                                WorldDirectorManager.instance().getBlockDataGrid(worldIn).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
+                            } else {
+                                bdp.lastTickTimeGrass = curTickTime;
+                            }
+
+                        } else {
+                            bdp.lastTickTimeGrass = curTickTime;
+                        }
+
+                        break;
+
                     }
                 }
-
-                //now that its fully restored to vanilla grass, lets blank out this data too to allow removeBlockDataIfRemovable to do its job
-                bdp.lastTickTimeGrass = 0;
-
-                //valid only when we are setting it to grass
-                WorldDirectorManager.instance().getBlockDataGrid(worldIn).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
-            } else {
-                bdp.lastTickTimeGrass = curTickTime;
             }
 
-        } else {
-            bdp.lastTickTimeGrass = curTickTime;
+
         }
 
     }
@@ -160,15 +191,19 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         if (stage != -1) {
             Block blockNext = lookupStageToBlock.get(stage + 1);
             if (blockNext != null) {
-                worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), blockNext.getDefaultState());
+
                 //if mostly trampled, remove plant above
-                if (stage >= 4) {
+                //if (stage >= 4) {
                     IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()));
-                    if (stateUp.getMaterial() == Material.PLANTS || stateUp.getMaterial() == Material.VINE) {
-                        //maybe let it "pop off"?
+                    if (/*stateUp.getMaterial() == Material.PLANTS || */stateUp.getMaterial() == Material.VINE) {
+                        //maybe let it "pop off"? - nah too many items, but lets only Material.VINE = tallgrass, dead bush, double plant, vine
+                        //still not working?
+                        //CULog.dbg("remove plant");
                         worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()), Blocks.AIR.getDefaultState());
                     }
-                }
+                //}
+
+                worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), blockNext.getDefaultState());
             }
 
         }
@@ -229,6 +264,13 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
 		}
 		
 	}
+
+	//since our block sinks into the ground a bit, we need to flag it not opaque
+	@Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
 
     /*protected BlockStateContainer createBlockState()
     {

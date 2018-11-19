@@ -1,12 +1,12 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/block",
   "textures": {
     "foliage": "desirepaths:blocks/grass_worn_4",
     "dirt": "desirepaths:blocks/dirt"
   },
   "elements": [
     {   "from": [ 0, 0, 0 ],
-      "to": [ 16, 15.99, 16 ],
+      "to": [ 16, 15.98, 16 ],
       "faces": {
         "up":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
         "north":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" },
@@ -16,7 +16,7 @@
         "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#dirt" }
       }
     },
-    {   "from": [ 0, 15.99, 0 ],
+    {   "from": [ 0, 15.98, 0 ],
       "to": [ 16, 16, 16 ],
       "faces": {
         "up":  { "uv": [ 0, 0, 16, 16 ], "texture": "#foliage", "tintindex": 0 },

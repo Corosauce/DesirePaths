@@ -72,9 +72,17 @@ public class EventHandlerForge {
 						BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(ent.world).getBlockData(newX, newY, newZ);// ServerTickHandler.wd.getBlockDataGrid(world).getBlockData(newX, newY, newZ);
 						
 						//add depending on a weight?
-						bdp.walkedOnAmount += 0.05F;
-						
-						//System.out.println("inc walk amount: " + bdp.walkedOnAmount);
+						bdp.walkedOnAmount += 0.15F;
+
+						//update time since last tick as this would count as a tick
+						//moved here so that active walking on it slows down its regrowth, re-enforces path degradation where its often walked on
+						bdp.lastTickTimeGrass = ent.world.getTotalWorldTime();
+
+						//trying to filter out gravity force of non falling entities
+						if (/*ent.motionY < -0.1*/ent.fallDistance > 0) {
+							System.out.println("inc walk amount: " + bdp.walkedOnAmount + " - " + ent.motionY);
+						}
+
 						
 						if (bdp.walkedOnAmount > 1F) {
 							//System.out.println("dirt!!!");
@@ -96,8 +104,6 @@ public class EventHandlerForge {
 
 							//reset walked on amount since its a new block state
 							bdp.walkedOnAmount = 0;
-							//update time since last tick as this would count as a tick
-							bdp.lastTickTimeGrass = ent.world.getTotalWorldTime();
 							
 							//BlockRegistry.dirtPath.blockID);
 							//cleanup for memory
