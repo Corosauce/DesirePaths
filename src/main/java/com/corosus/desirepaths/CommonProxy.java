@@ -2,12 +2,12 @@ package com.corosus.desirepaths;
 
 import CoroUtil.forge.CoroUtil;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.corosus.desirepaths.block.BlockGrassWorn;
 
@@ -54,6 +54,16 @@ public class CommonProxy
 		addToLookup(DesirePaths.dirt_6, 6);
 	}
 
+	@SubscribeEvent
+	public static void registerItems(RegistryEvent.Register<Item> event) {
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_1).setRegistryName(DesirePaths.dirt_1.getRegistryName()));
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_2).setRegistryName(DesirePaths.dirt_2.getRegistryName()));
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_3).setRegistryName(DesirePaths.dirt_3.getRegistryName()));
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_4).setRegistryName(DesirePaths.dirt_4.getRegistryName()));
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_5).setRegistryName(DesirePaths.dirt_5.getRegistryName()));
+		CoroUtil.proxy.addItemBlock(event, new ItemBlock(DesirePaths.dirt_6).setRegistryName(DesirePaths.dirt_6.getRegistryName()));
+	}
+
 	public static void addToLookup(Block block, int id) {
 		BlockGrassWorn.lookupBlockToStage.put(block, id);
 		BlockGrassWorn.lookupStageToBlock.put(id, block);
@@ -70,6 +80,10 @@ public class CommonProxy
 		if (event != null) {
 			event.getRegistry().register(parBlock);
 		}
+	}
+
+	public void addItemBlock(RegistryEvent.Register<Item> event, Item item) {
+		event.getRegistry().register(item);
 	}
 
 	public String getNameUnlocalized(String name) {

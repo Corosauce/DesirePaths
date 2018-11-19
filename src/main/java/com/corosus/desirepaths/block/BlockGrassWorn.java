@@ -20,6 +20,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRenderLayer;
@@ -30,7 +31,7 @@ import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
+public class BlockGrassWorn extends Block implements IGrowable
 {
     public static List<Block> listDegradeProgression = new ArrayList<>();
 
@@ -44,6 +45,7 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         this.setDefaultState(this.blockState.getBaseState());
         this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+        this.setLightOpacity(255);
     }
 
     /**
@@ -56,12 +58,56 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         return state.withProperty(SNOWY, Boolean.valueOf(block == Blocks.SNOW || block == Blocks.SNOW_LAYER));
     }*/
 
+    public static void performWearTick(World world, BlockPos pos, float wearAmplifier) {
+        IBlockState state = world.getBlockState(pos);
+        Block block = state.getBlock();
+
+        //check for block that can have beaten path data
+        //TODO: switch to a hashmap for faster conversion
+        int index = -1;
+        if (BlockGrassWorn.lookupBlockToStage.containsKey(block)) {
+            index = BlockGrassWorn.lookupBlockToStage.get(block);
+        }
+
+        //if invalid or last entry in list
+        if (index == -1 || index == BlockGrassWorn.lookupBlockToStage.size() - 1) {
+            return;
+        }
+
+        BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(world).getBlockData(pos.getX(), pos.getY(), pos.getZ());// ServerTickHandler.wd.getBlockDataGrid(world).getBlockData(newX, newY, newZ);
+
+        //add depending on a weight?
+        bdp.walkedOnAmount += 0.05F * wearAmplifier;
+
+        //update time since last tick as this would count as a tick
+        //moved here so that active walking on it slows down its regrowth, re-enforces path degradation where its often walked on
+        bdp.lastTickTimeGrass = world.getTotalWorldTime();
+
+        if (bdp.walkedOnAmount > 1F) {
+            BlockGrassWorn.decaySlowly(world, block, pos);
+
+            //reset walked on amount since its a new block state
+            //also dont set to full 0 so it doesnt insta revert and block rerender spam due to regrowth code
+            bdp.walkedOnAmount = 0.10F;
+
+            //BlockRegistry.dirtPath.blockID);
+            //cleanup for memory
+            //- maybe pointless here since we are counting lastTickTimeGrass as important data
+            WorldDirectorManager.instance().getBlockDataGrid(world).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
+        }
+    }
+
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
 
         if (!worldIn.isRemote) {
-            //CULog.dbg("rand tick");
+            long curTickTime = worldIn.getTotalWorldTime();
+            BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(worldIn).getBlockData(pos.getX(), pos.getY(), pos.getZ());
+            long lastTickTimeGrass = bdp.lastTickTimeGrass;
+            //as soon as any attempts are made we need to mark the time
+            //this avoids rapid repair as soon as sun comes up etc
+            bdp.lastTickTimeGrass = curTickTime;
 
             if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
                 for (int i = 0; i < 4; ++i) {
@@ -75,21 +121,28 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
                     Block block = iblockstate1.getBlock();
 
                     //if near block is grass or one of our more grass like blocks (but not the more dirt like ones
-                    if (block == Blocks.GRASS
+                    //check for not BlockGrassWorn above grass to work around grass showing up under our blocks
+                    if ((block == Blocks.GRASS && !(worldIn.getBlockState(blockpos.up()).getBlock() instanceof BlockGrassWorn))
                             || block == DesirePaths.dirt_1
                             || block == DesirePaths.dirt_2
-                            || block == DesirePaths.dirt_3)
-                    {
-                        BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(worldIn).getBlockData(pos.getX(), pos.getY(), pos.getZ());
-                        //bdp.tickUpdate();
-                        long curTickTime = worldIn.getTotalWorldTime();
+                            || block == DesirePaths.dirt_3) {
 
                         //used as a baseline to scale based on time between random ticks
-                        long timeSinceLastTick = curTickTime - bdp.lastTickTimeGrass;
+                        long timeSinceLastTick = curTickTime - lastTickTimeGrass;
 
                         //CULog.dbg("dbg: " + curTickTime + " - " + bdp.lastTickTimeGrass + " = " + timeSinceLastTick);
 
                         long timeTo1StageOfRegrowth = 20 * 60 * 60 * 3;
+
+                        //make barely worn grass repair faster so lots of seldom walked on areas clear up faster
+                        if (state.getBlock() == DesirePaths.dirt_1) {
+                            timeTo1StageOfRegrowth = 20 * 60 * 30;
+                        } else if (state.getBlock() == DesirePaths.dirt_2) {
+                            timeTo1StageOfRegrowth = 20 * 60 * 60;
+                        } else if (state.getBlock() == DesirePaths.dirt_3) {
+                            timeTo1StageOfRegrowth = 20 * 60 * 60 * 2;
+                        }
+                        //timeTo1StageOfRegrowth = 1;
                         float oneStageOfRegrowth = 1F;
 
                         float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
@@ -99,14 +152,14 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
                         //code that scales based on ticktime diff goes here
                         bdp.walkedOnAmount -= amountToAdjust;
 
-
                         //if (bdp.walkedOnAmount < -1) {
-                        CULog.dbg("decr walk by " + amountToAdjust + " to " + bdp.walkedOnAmount);
+                        //CULog.dbg("decr walk by " + amountToAdjust + " to " + bdp.walkedOnAmount);
                         //}
 
                         if (bdp.walkedOnAmount <= 0) {
 
                             //GROW!!!
+                            //CULog.dbg("repair grass state - " + amountToAdjust + " to " + bdp.walkedOnAmount);
                             growSlowly(worldIn, state.getBlock(), pos);
 
                             //reset to nearly full walked on so it has to tick down the value again
@@ -131,12 +184,8 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
 
                                 //valid only when we are setting it to grass
                                 WorldDirectorManager.instance().getBlockDataGrid(worldIn).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
-                            } else {
-                                bdp.lastTickTimeGrass = curTickTime;
                             }
 
-                        } else {
-                            bdp.lastTickTimeGrass = curTickTime;
                         }
 
                         break;
@@ -192,16 +241,13 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
             Block blockNext = lookupStageToBlock.get(stage + 1);
             if (blockNext != null) {
 
-                //if mostly trampled, remove plant above
-                //if (stage >= 4) {
-                    IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()));
-                    if (/*stateUp.getMaterial() == Material.PLANTS || */stateUp.getMaterial() == Material.VINE) {
-                        //maybe let it "pop off"? - nah too many items, but lets only Material.VINE = tallgrass, dead bush, double plant, vine
-                        //still not working?
-                        //CULog.dbg("remove plant");
-                        worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()), Blocks.AIR.getDefaultState());
-                    }
-                //}
+                //remove plant above
+                IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()));
+                //IBlockState stateDown = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()-1, pos.getZ()));
+                if (/*stateUp.getMaterial() == Material.PLANTS || */stateUp.getMaterial() == Material.VINE) {
+                    //maybe let it "pop off"? - nah too many items, but lets only Material.VINE = tallgrass, dead bush, double plant, vine
+                    worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()), Blocks.AIR.getDefaultState());
+                }
 
                 worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), blockNext.getDefaultState());
             }
@@ -251,31 +297,21 @@ public class BlockGrassWorn extends Block implements IGrowable, IBlockColor
         return 0;
     }
 
-	@Override
-	public int colorMultiplier(IBlockState state, IBlockAccess worldIn,
-			BlockPos pos, int tintIndex) {
-		try {
-			return BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
-		} catch (Exception e) {
-			// TODO: fix exception for NPE at "at net.minecraft.world.biome.BiomeColorHelper.getColorAtPos(BiomeColorHelper.java:39)"
-			//reproduce by jump landing on block
-			e.printStackTrace();
-			return 0;
-		}
-		
-	}
 
-	//since our block sinks into the ground a bit, we need to flag it not opaque
+    //since our block sinks into the ground a bit, we need to flag it not opaque
 	@Override
     public boolean isOpaqueCube(IBlockState state)
     {
         return false;
     }
 
-    /*protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {SNOWY});
-    }*/
+    //wont work for initial grass block but owell
+    @Override
+    public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
+        if (!worldIn.isRemote) {
+            performWearTick(worldIn, pos, 10F);
+        }
+    }
 
 
 }
