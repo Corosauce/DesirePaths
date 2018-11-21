@@ -58,8 +58,6 @@ public class BlockGrassWorn extends Block implements IGrowable
                 bdp.walkedOnAmount = 0;
                 bdp.lastTickTimeGrass = 0;
 
-                System.out.println("remove");
-
                 WorldDirectorManager.instance().getBlockDataGrid(worldIn).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
             }
         }
