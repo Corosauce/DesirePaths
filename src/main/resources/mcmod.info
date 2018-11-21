@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "desirepaths",
+  "name": "Desire Paths",
+  "description": "Wears down grass as its walked on to create naturally formed dirt paths",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Corosus"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

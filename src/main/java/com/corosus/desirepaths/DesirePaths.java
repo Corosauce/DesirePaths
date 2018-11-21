@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = DesirePaths.MODID, version = DesirePaths.VERSION, dependencies="required-after:coroutil")
+@Mod(modid = DesirePaths.MODID, version = DesirePaths.VERSION, dependencies="required-after:coroutil@[1.12.1-1.2.14,)")
 public class DesirePaths
 {
     public static final String MODID = "desirepaths";
