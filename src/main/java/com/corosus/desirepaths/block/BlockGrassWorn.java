@@ -42,6 +42,29 @@ public class BlockGrassWorn extends Block implements IGrowable
         this.setSoundType(SoundType.GROUND);
     }
 
+    //TODO: what about generic break? dont think its possible still, owell, maybe tick glock grid occasionally to find positions without BlockGrassWorn
+    //- or on placement of block, invalidate old data?
+    @Override
+    public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state) {
+        super.onBlockDestroyedByPlayer(worldIn, pos, state);
+
+        //remove block data since block is destroyed
+        //future proofed for other features by only removing our data and letting internals deside to remove it
+        if (!worldIn.isRemote) {
+            BlockDataPoint bdp = WorldDirectorManager.instance().getBlockDataGrid(worldIn).getBlockData(pos.getX(), pos.getY(), pos.getZ());
+
+            //in this case it can be null because position is now air and it wasnt ticked or walked on yet
+            if (bdp != null) {
+                bdp.walkedOnAmount = 0;
+                bdp.lastTickTimeGrass = 0;
+
+                System.out.println("remove");
+
+                WorldDirectorManager.instance().getBlockDataGrid(worldIn).removeBlockDataIfRemovable(pos.getX(), pos.getY(), pos.getZ());
+            }
+        }
+    }
+
     /**
      * Get the actual Block state of this Block at the given position. This applies properties not visible in the
      * metadata, such as fence connections.
