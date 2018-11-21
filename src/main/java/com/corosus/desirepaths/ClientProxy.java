@@ -9,11 +9,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ColorizerGrass;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.model.ModelLoader;
@@ -38,12 +42,26 @@ public class ClientProxy extends CommonProxy
     	super.init();
 
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_1);
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_2);
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_3);
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_4);
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_5);
-        blockColors.registerBlockColorHandler((state, worldIn, pos, tintIndex) -> BiomeColorHelper.getGrassColorAtPos(worldIn, pos), DesirePaths.dirt_6);
+
+        IBlockColor blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_1);
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_2);
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_3);
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_4);
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_5);
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_6);
+
+        ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+
+        IItemColor itemColorizer = (stack, tintIndex) -> ColorizerGrass.getGrassColor(0.5D, 1.0D);
+
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_1));
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_2));
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_3));
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_4));
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_5));
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_6));
     	
     }
 
