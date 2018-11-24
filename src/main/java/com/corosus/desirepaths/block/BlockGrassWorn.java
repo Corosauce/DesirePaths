@@ -312,14 +312,6 @@ public class BlockGrassWorn extends Block implements IGrowable
         return 0;
     }
 
-
-    //since our block sinks into the ground a bit, we need to flag it not opaque
-	@Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
-    }
-
     //wont work for initial grass block but owell
     @Override
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
