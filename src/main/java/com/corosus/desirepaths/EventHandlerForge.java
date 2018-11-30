@@ -1,6 +1,7 @@
 package com.corosus.desirepaths;
 
 import com.corosus.desirepaths.block.BlockGrassWorn;
+import com.corosus.desirepaths.config.ConfigDesirePaths;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -25,19 +26,24 @@ public class EventHandlerForge {
 	@SubscribeEvent
 	public void entityTick(LivingUpdateEvent event) {
 
+		//dev env debug
 		//MinecraftServer.tickRate = 5;
 		
 		EntityLivingBase ent = event.getEntityLiving();
 		int walkOnRate = 5;
 		
 		if (!ent.world.isRemote) {
-			if (ent.onGround && ent.world.getTotalWorldTime() % walkOnRate == 0) {
+			if (ConfigDesirePaths.pathsWearDown && ent.onGround && ent.world.getTotalWorldTime() % walkOnRate == 0) {
+
+				//TODO: motionY always has gravity in it i think, should we not factor it in here? might be mudding up speed calc
 				double speed = Math.sqrt(ent.motionX * ent.motionX + ent.motionY * ent.motionY + ent.motionZ * ent.motionZ);
+
 				if (ent instanceof EntityPlayer) {
 					Vec3 vec = CoroUtilPlayer.getPlayerSpeedCapped((EntityPlayer) ent, 0.1F);
 					speed = Math.sqrt(vec.xCoord * vec.xCoord + vec.yCoord * vec.yCoord + vec.zCoord * vec.zCoord);
 					//System.out.println("player speed: " + speed);
 				}
+
 				if (speed > 0.08) {
 					int newX = MathHelper.floor(ent.posX);
 					int newY = MathHelper.floor(ent.getEntityBoundingBox().minY - 1);

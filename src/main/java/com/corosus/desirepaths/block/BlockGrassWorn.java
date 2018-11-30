@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
 import com.corosus.desirepaths.DesirePaths;
+import com.corosus.desirepaths.config.ConfigDesirePaths;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -124,7 +125,7 @@ public class BlockGrassWorn extends Block implements IGrowable
             //this avoids rapid repair as soon as sun comes up etc
             bdp.lastTickTimeGrass = curTickTime;
 
-            if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+            if (ConfigDesirePaths.pathsRepair && worldIn.getLightFromNeighbors(pos.up()) >= 9) {
                 for (int i = 0; i < 4; ++i) {
                     BlockPos blockpos = pos.add(rand.nextInt(3) - 1, rand.nextInt(3) - 1, rand.nextInt(3) - 1);
 

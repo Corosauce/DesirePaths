@@ -2,8 +2,8 @@
   "parent": "block/block",
   "textures": {
     "foliage": "desirepaths:blocks/grass_worn_5",
-    "dirt": "desirepaths:blocks/dirt",
-    "particle": "desirepaths:blocks/dirt",
+    "dirt": "blocks/dirt",
+    "particle": "blocks/dirt",
     "overlay": "blocks/grass_side_overlay"
   },
   "elements": [

@@ -1,11 +1,13 @@
 package com.corosus.desirepaths;
 
+import com.corosus.desirepaths.config.ConfigDesirePaths;
+import modconfig.ConfigMod;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = DesirePaths.MODID, version = DesirePaths.VERSION, dependencies="required-after:coroutil@[1.12.1-1.2.14,)")
 public class DesirePaths
@@ -22,8 +24,14 @@ public class DesirePaths
     
     @SidedProxy(clientSide = "com.corosus.desirepaths.ClientProxy", serverSide = "com.corosus.desirepaths.CommonProxy")
     public static CommonProxy proxy;
-    
-    @EventHandler
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        ConfigMod.addConfigFile(event, new ConfigDesirePaths());
+    }
+
+    @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
     	proxy.init();
