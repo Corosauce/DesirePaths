@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import CoroUtil.forge.CULog;
 import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
 import com.corosus.desirepaths.DesirePaths;
@@ -273,7 +274,27 @@ public class BlockGrassWorn extends Block implements IGrowable
                     worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()), Blocks.AIR.getDefaultState());
                 }
 
-                worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), blockNext.getDefaultState());
+                IBlockState stateNext = blockNext.getDefaultState();
+                if (blockNext == DesirePaths.dirt_6) {
+                    try {
+                        String[] str = ConfigDesirePaths.blockFinalWornStage.split(" ");
+                        int meta = 0;
+                        Block blockNextOverride = Block.getBlockFromName(str[0]);
+                        if (blockNextOverride != null) {
+                            if (str.length > 1) {
+                                meta = Integer.valueOf(str[1]);
+                            }
+                            stateNext = blockNextOverride.getStateFromMeta(meta);
+                        } else {
+                            CULog.err("could not parse to block from this string: " + str[0]);
+                        }
+                    } catch (Exception ex) {
+                        CULog.err("incorrect use of blockToSetForFullDirt, " + ex.toString());
+                    }
+
+                }
+
+                worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), stateNext);
             }
 
         }
