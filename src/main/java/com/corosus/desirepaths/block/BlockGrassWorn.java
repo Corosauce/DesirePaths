@@ -16,9 +16,17 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemHoe;
+import net.minecraft.item.ItemSpade;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -321,5 +329,25 @@ public class BlockGrassWorn extends Block implements IGrowable
         }
     }
 
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
+        if (playerIn != null && !worldIn.isRemote) {
+            ItemStack stack = playerIn.getHeldItem(hand);
+            if (playerIn.canPlayerEdit(pos.offset(facing), facing, stack)) {
+                if (stack.getItem() instanceof ItemSpade) {
+                    worldIn.setBlockState(pos, Blocks.GRASS_PATH.getDefaultState());
+                    worldIn.playSound(playerIn, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    stack.damageItem(1, playerIn);
+                    return true;
+                } else if (stack.getItem() instanceof ItemHoe) {
+                    worldIn.setBlockState(pos, Blocks.FARMLAND.getDefaultState());
+                    stack.damageItem(1, playerIn);
+                    return true;
+                }
+            }
+        }
+
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
 }
