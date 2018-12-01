@@ -2,7 +2,12 @@ package com.corosus.desirepaths.ai;
 
 import com.corosus.desirepaths.DesirePaths;
 import com.corosus.desirepaths.block.BlockGrassWorn;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.pattern.BlockStateMatcher;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIEatGrass;
 import net.minecraft.init.Blocks;
@@ -10,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class EntityAIEatGrassExtended extends EntityAIEatGrass
 {
+
+    public static final Predicate<IBlockState> IS_TALL_GRASS = BlockStateMatcher.forBlock(Blocks.TALLGRASS).where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
 
     public EntityAIEatGrassExtended(EntityLiving grassEaterEntityIn)
     {
