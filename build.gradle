@@ -107,3 +107,9 @@ publishing {
         maven { url "$buildDir/../../maven" }
     }
 }
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'desirepaths_at.cfg'
+    }
+}

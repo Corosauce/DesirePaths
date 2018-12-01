@@ -1,33 +1,48 @@
 package com.corosus.desirepaths;
 
+import CoroUtil.ai.BehaviorModifier;
+import CoroUtil.forge.CULog;
+import com.corosus.desirepaths.ai.EntityAIEatGrassExtended;
 import com.corosus.desirepaths.block.BlockGrassWorn;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import com.corosus.desirepaths.util.UtilEntityBuffsInstances;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIEatGrass;
+import net.minecraft.entity.ai.EntityAIMoveIndoors;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import CoroUtil.util.CoroUtilPlayer;
 import CoroUtil.util.Vec3;
-import CoroUtil.world.WorldDirectorManager;
-import CoroUtil.world.grid.block.BlockDataPoint;
 
 public class EventHandlerForge {
 
-	
+	@SubscribeEvent
+	public void onEntityCreatedOrLoaded(EntityJoinWorldEvent event) {
+		if (event.getEntity().world.isRemote) return;
+
+		if (event.getEntity() instanceof EntitySheep) {
+			EntitySheep ent = (EntitySheep) event.getEntity();
+
+			CULog.dbg("replacing EntityAIEatGrass with our extended version");
+			EntityAIEatGrassExtended task = new EntityAIEatGrassExtended(ent);
+			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task, 5);
+
+			ent.entityAIEatGrass = task;
+		}
+	}
 	
 	@SubscribeEvent
 	public void entityTick(LivingUpdateEvent event) {
 
 		//dev env debug
-		//MinecraftServer.tickRate = 5;
+		//MinecraftServer.tickRate = 50;
 		
 		EntityLivingBase ent = event.getEntityLiving();
 		int walkOnRate = 5;
@@ -50,7 +65,14 @@ public class EventHandlerForge {
 					int newZ = MathHelper.floor(ent.posZ);
 					BlockPos pos = new BlockPos(newX, newY, newZ);
 
-					BlockGrassWorn.performWearTick(ent.world, pos, 1F);
+					float amp = 1F;
+					if (ent instanceof EntitySheep) {
+						amp = (float) Math.max(ConfigDesirePaths.sheepPathWearAmplifier, 0);
+					}
+
+					if (amp != 0) {
+						BlockGrassWorn.performWearTick(ent.world, pos, amp);
+					}
 				}
 			}
 		}
