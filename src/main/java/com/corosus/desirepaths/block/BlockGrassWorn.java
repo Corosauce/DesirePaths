@@ -12,6 +12,8 @@ import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
 import com.corosus.desirepaths.DesirePaths;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
+import com.corosus.desirepaths.util.UtilEntityScale;
+
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -84,6 +86,9 @@ public class BlockGrassWorn extends Block implements IGrowable
     }*/
 
     public static void performWearTick(World world, BlockPos pos, float wearAmplifier) {
+    	if(wearAmplifier == 0.0F)
+    		return;
+    	
         IBlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
@@ -346,8 +351,9 @@ public class BlockGrassWorn extends Block implements IGrowable
     @Override
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
         if (!worldIn.isRemote) {
-            performWearTick(worldIn, pos, 10F);
+            performWearTick(worldIn, pos, UtilEntityScale.getWeight(entityIn) * fallDistance);
         }
+        super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
     }
 
     @Override

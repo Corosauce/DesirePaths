@@ -6,6 +6,8 @@ import com.corosus.desirepaths.ai.EntityAIEatGrassExtended;
 import com.corosus.desirepaths.block.BlockGrassWorn;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
 import com.corosus.desirepaths.util.UtilEntityBuffsInstances;
+import com.corosus.desirepaths.util.UtilEntityScale;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIEatGrass;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
@@ -65,14 +67,11 @@ public class EventHandlerForge {
 					int newZ = MathHelper.floor(ent.posZ);
 					BlockPos pos = new BlockPos(newX, newY, newZ);
 
-					float amp = 1F;
-					if (ent instanceof EntitySheep) {
-						amp = (float) Math.max(ConfigDesirePaths.sheepPathWearAmplifier, 0);
-					}
+					float amp = ent instanceof EntitySheep ?
+									(float) Math.max(ConfigDesirePaths.sheepPathWearAmplifier, 0) :
+									UtilEntityScale.getWeight(ent);
 
-					if (amp != 0) {
-						BlockGrassWorn.performWearTick(ent.world, pos, amp);
-					}
+					BlockGrassWorn.performWearTick(ent.world, pos, amp);
 				}
 			}
 		}
