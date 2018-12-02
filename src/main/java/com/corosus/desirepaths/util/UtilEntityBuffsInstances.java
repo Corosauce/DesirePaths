@@ -5,13 +5,12 @@ import java.util.Iterator;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 
 public class UtilEntityBuffsInstances {
 
     public static boolean replaceTaskIfMissing(EntityCreature ent, Class taskToReplace, EntityAIBase taskToReplaceWith) {
         int priority = Integer.MIN_VALUE;
-        for (Iterator<EntityAITaskEntry> iter = ent.tasks.taskEntries.iterator(); iter.hasNext(); ) {
+        for (Iterator<EntityAITasks.EntityAITaskEntry> iter = ent.tasks.taskEntries.iterator(); iter.hasNext(); ) {
             EntityAITasks.EntityAITaskEntry entry = iter.next();
             if (taskToReplace.isAssignableFrom(entry.action.getClass())) {
             	priority = entry.priority;
