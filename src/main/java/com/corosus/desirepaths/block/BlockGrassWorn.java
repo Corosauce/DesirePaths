@@ -353,6 +353,7 @@ public class BlockGrassWorn extends Block implements IGrowable
         if (!worldIn.isRemote) {
             performWearTick(worldIn, pos, UtilEntityScale.getWeight(entityIn) * 10F);
         }
+        super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
     }
 
     @Override
