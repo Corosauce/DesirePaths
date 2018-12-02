@@ -1,0 +1,15 @@
+{
+    "ctm": {
+        "ctm_version": 1,
+        "type": "EDGES",
+        "textures": [
+            "desirepaths:blocks/dirt_ctm",
+            "blocks/grass_top"
+        ],
+        "extra": {
+            "connect_to": [
+                { "block": "grass" }
+            ]
+        }
+    }
+}

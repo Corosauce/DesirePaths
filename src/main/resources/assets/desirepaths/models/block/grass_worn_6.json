@@ -2,7 +2,7 @@
   "parent": "block/block",
   "textures": {
     "foliage": "desirepaths:blocks/grass_worn_6",
-    "dirt": "blocks/dirt",
+    "dirt": "desirepaths:blocks/dirt",
     "particle": "blocks/dirt",
     "overlay": "blocks/grass_side_overlay"
   },
