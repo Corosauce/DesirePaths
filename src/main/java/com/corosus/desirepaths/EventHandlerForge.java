@@ -1,38 +1,47 @@
 package com.corosus.desirepaths;
 
-import CoroUtil.ai.BehaviorModifier;
 import CoroUtil.forge.CULog;
+
 import com.corosus.desirepaths.ai.EntityAIEatGrassExtended;
 import com.corosus.desirepaths.block.BlockGrassWorn;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
 import com.corosus.desirepaths.util.UtilEntityBuffsInstances;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIEatGrass;
-import net.minecraft.entity.ai.EntityAIMoveIndoors;
-import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import CoroUtil.util.CoroUtilPlayer;
 import CoroUtil.util.Vec3;
 
 public class EventHandlerForge {
 
+	private static Class<?> animaniaSheepClass;
+
+	static {
+		try {
+			animaniaSheepClass = Loader.isModLoaded("animania") ? Class.forName("com.animania.common.entities.sheep.EntityAnimaniaSheep") : null;
+		} catch (ClassNotFoundException e) {
+			CULog.err("ERROR getting animania base sheep class, mod might have changed it, needs updating in DesirePaths");
+			e.printStackTrace();
+		}
+	}
+
 	@SubscribeEvent
 	public void onEntityCreatedOrLoaded(EntityJoinWorldEvent event) {
 		if (event.getEntity().world.isRemote) return;
 
-		if (event.getEntity() instanceof EntitySheep) {
+		if (event.getEntity() instanceof EntitySheep && !(animaniaSheepClass != null && animaniaSheepClass.isAssignableFrom(event.getEntity().getClass()))) {
 			EntitySheep ent = (EntitySheep) event.getEntity();
 
 			CULog.dbg("replacing EntityAIEatGrass with our extended version");
 			EntityAIEatGrassExtended task = new EntityAIEatGrassExtended(ent);
-			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task, 5);
+			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task);
 
 			ent.entityAIEatGrass = task;
 		}
