@@ -30,7 +30,7 @@ public class EventHandlerForge {
 	public void onEntityCreatedOrLoaded(EntityJoinWorldEvent event) {
 		if (event.getEntity().world.isRemote) return;
 
-		if (event.getEntity() instanceof EntitySheep && !(Loader.isModLoaded("desirepaths") && event.getEntity() instanceof EntityAnimaniaSheep)) {
+		if (event.getEntity() instanceof EntitySheep && !(Loader.isModLoaded("animania") && event.getEntity() instanceof EntityAnimaniaSheep)) {
 			EntitySheep ent = (EntitySheep) event.getEntity();
 
 			
