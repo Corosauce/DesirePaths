@@ -36,7 +36,7 @@ public class EventHandlerForge {
 			
 			CULog.dbg("replacing EntityAIEatGrass with our extended version");
 			EntityAIEatGrassExtended task = new EntityAIEatGrassExtended(ent);
-			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task, 5);
+			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task);
 
 			ent.entityAIEatGrass = task;
 		}
