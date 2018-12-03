@@ -198,9 +198,15 @@ public class BlockGrassWorn extends Block implements IGrowable
 
                                 //random chance to regrow tallgrass above
                                 if (rand.nextInt(5) == 0) {
-                                    IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()));
+                                    BlockPos posUp = pos.up();
+                                    IBlockState stateUp = worldIn.getBlockState(posUp);
                                     if (stateUp.getMaterial() == Material.AIR) {
-                                        worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()), Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+                                        if (rand.nextBoolean()) {
+                                            worldIn.setBlockState(posUp,
+                                                    Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+                                        } else {
+                                            Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
+                                        }
                                     }
                                 }
 
