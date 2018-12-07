@@ -25,6 +25,11 @@ public class CommonProxy
 
     }
 
+	public void initPost()
+	{
+
+	}
+
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
 		DesirePaths.proxy.addBlock(event, DesirePaths.dirt_6 = new BlockGrassWorn(), "grass_worn_6");

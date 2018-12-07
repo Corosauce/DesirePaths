@@ -5,6 +5,7 @@ import CoroUtil.forge.CULog;
 import com.corosus.desirepaths.ai.EntityAIEatGrassExtended;
 import com.corosus.desirepaths.block.BlockGrassWorn;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
+import com.corosus.desirepaths.config.ConfigDesirePathsDeveloper;
 import com.corosus.desirepaths.util.UtilEntityBuffsInstances;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIEatGrass;
@@ -39,7 +40,7 @@ public class EventHandlerForge {
 		if (event.getEntity() instanceof EntitySheep && !(animaniaSheepClass != null && animaniaSheepClass.isAssignableFrom(event.getEntity().getClass()))) {
 			EntitySheep ent = (EntitySheep) event.getEntity();
 
-			CULog.dbg("replacing EntityAIEatGrass with our extended version");
+			//CULog.dbg("replacing EntityAIEatGrass with our extended version");
 			EntityAIEatGrassExtended task = new EntityAIEatGrassExtended(ent);
 			UtilEntityBuffsInstances.replaceTaskIfMissing(ent, EntityAIEatGrass.class, task);
 
@@ -74,7 +75,7 @@ public class EventHandlerForge {
 					int newZ = MathHelper.floor(ent.posZ);
 					BlockPos pos = new BlockPos(newX, newY, newZ);
 
-					float amp = 1F;
+					float amp = 1F * (float)ConfigDesirePathsDeveloper.pathWalkWearAmplifier;
 					if (ent instanceof EntitySheep) {
 						amp = (float) Math.max(ConfigDesirePaths.sheepPathWearAmplifier, 0);
 					}

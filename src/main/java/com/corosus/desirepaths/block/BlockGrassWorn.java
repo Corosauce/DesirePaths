@@ -12,6 +12,7 @@ import CoroUtil.world.WorldDirectorManager;
 import CoroUtil.world.grid.block.BlockDataPoint;
 import com.corosus.desirepaths.DesirePaths;
 import com.corosus.desirepaths.config.ConfigDesirePaths;
+import com.corosus.desirepaths.config.ConfigDesirePathsDeveloper;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -172,7 +173,7 @@ public class BlockGrassWorn extends Block implements IGrowable
 
                         float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
 
-                        float amountToAdjust = oneStageOfRegrowth * scale;
+                        float amountToAdjust = oneStageOfRegrowth * scale * (float)Math.max(ConfigDesirePathsDeveloper.pathRepairAmplifier, 0);
 
                         //code that scales based on ticktime diff goes here
                         bdp.walkedOnAmount -= amountToAdjust;

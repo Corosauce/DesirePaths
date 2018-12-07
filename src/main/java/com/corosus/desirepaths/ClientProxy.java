@@ -23,6 +23,7 @@ import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,29 +41,36 @@ public class ClientProxy extends CommonProxy
     public void init()
     {
     	super.init();
+    }
+
+    public void initPost()
+    {
+        super.initPost();
 
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
 
-        IBlockColor blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+        //old quark non compat way:
+        //IBlockColor blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
 
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_1);
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_2);
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_3);
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_4);
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_5);
-        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_6);
+        //since Quark mod hacks the biome colorization, i need to hack his hack and use whatever modification he set for the grass block, and also run it in post init, and have it run after quark for good measure:
+        //see: https://github.com/Vazkii/Quark/blob/c491ee6fbae2e320325702689cbe67f47e693ba5/src/main/java/vazkii/quark/client/feature/GreenerGrass.java#L69-L81
+        java.util.Map<net.minecraftforge.registries.IRegistryDelegate<Block>, IBlockColor> map = ObfuscationReflectionHelper.getPrivateValue(BlockColors.class, blockColors, "blockColorMap");
+        IBlockColor blockColorizer = map.get(Blocks.GRASS.delegate);
+
+        //fallback on null just in case
+        if (blockColorizer == null) {
+            blockColorizer = blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+        }
+
+        blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_1, DesirePaths.dirt_2, DesirePaths.dirt_3,
+                DesirePaths.dirt_4, DesirePaths.dirt_5, DesirePaths.dirt_6);
 
         ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-
         IItemColor itemColorizer = (stack, tintIndex) -> ColorizerGrass.getGrassColor(0.5D, 1.0D);
 
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_1));
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_2));
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_3));
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_4));
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_5));
-        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_6));
-    	
+        itemColors.registerItemColorHandler(itemColorizer, Item.getItemFromBlock(DesirePaths.dirt_1), Item.getItemFromBlock(DesirePaths.dirt_2),
+                Item.getItemFromBlock(DesirePaths.dirt_3), Item.getItemFromBlock(DesirePaths.dirt_4),
+                Item.getItemFromBlock(DesirePaths.dirt_5), Item.getItemFromBlock(DesirePaths.dirt_6));
     }
 
     @Override

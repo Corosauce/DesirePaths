@@ -2,6 +2,7 @@ package com.corosus.desirepaths.config;
 
 import com.corosus.desirepaths.DesirePaths;
 import modconfig.ConfigComment;
+import modconfig.ConfigMod;
 import modconfig.IConfigCategory;
 
 public class ConfigDesirePaths implements IConfigCategory {
@@ -14,6 +15,9 @@ public class ConfigDesirePaths implements IConfigCategory {
 
     @ConfigComment("Makes sheep wear down paths at a slower rate, to help them still have grass to eat")
     public static double sheepPathWearAmplifier = 0.1D;
+
+    @ConfigComment("Use at own risk, will not support, requires game restart on change")
+    public static boolean enableAdvancedDeveloperConfigFiles = false;
 
     @Override
     public String getName() {
@@ -37,6 +41,8 @@ public class ConfigDesirePaths implements IConfigCategory {
 
     @Override
     public void hookUpdatedValues() {
-
+        if (enableAdvancedDeveloperConfigFiles && !ConfigMod.instance.configLookup.containsKey("DesirePathsDeveloper")) {
+            ConfigMod.addConfigFile(null, new ConfigDesirePathsDeveloper());
+        }
     }
 }
