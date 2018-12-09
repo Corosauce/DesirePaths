@@ -30,7 +30,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -273,14 +276,6 @@ public class BlockGrassWorn extends Block implements IGrowable
             Block blockNext = lookupStageToBlock.get(stage + 1);
             if (blockNext != null) {
 
-                //remove plant above
-                IBlockState stateUp = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()));
-                //IBlockState stateDown = worldIn.getBlockState(new BlockPos(pos.getX(), pos.getY()-1, pos.getZ()));
-                if (/*stateUp.getMaterial() == Material.PLANTS || */stateUp.getMaterial() == Material.VINE) {
-                    //maybe let it "pop off"? - nah too many items, but lets only Material.VINE = tallgrass, dead bush, double plant, vine
-                    worldIn.setBlockState(new BlockPos(pos.getX(), pos.getY()+1, pos.getZ()), Blocks.AIR.getDefaultState());
-                }
-
                 IBlockState stateNext = blockNext.getDefaultState();
                 if (blockNext == DesirePaths.dirt_6) {
                     try {
@@ -377,5 +372,28 @@ public class BlockGrassWorn extends Block implements IGrowable
         }
 
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
+        if (super.canSustainPlant(state, world, pos, direction, plantable)) {
+            return true;
+        }
+
+        if (state.getBlock() == DesirePaths.dirt_1 || state.getBlock() == DesirePaths.dirt_2 || state.getBlock() == DesirePaths.dirt_3)
+        {
+            //copied from Block.canSustainPlant
+            net.minecraftforge.common.EnumPlantType plantType = plantable.getPlantType(world, pos.offset(direction));
+            if (plantType == EnumPlantType.Plains) {
+                return true;
+            } else if (plantType == EnumPlantType.Beach) {
+                return (world.getBlockState(pos.east()).getMaterial() == Material.WATER ||
+                        world.getBlockState(pos.west()).getMaterial() == Material.WATER ||
+                        world.getBlockState(pos.north()).getMaterial() == Material.WATER ||
+                        world.getBlockState(pos.south()).getMaterial() == Material.WATER);
+            }
+        }
+
+        return false;
     }
 }
