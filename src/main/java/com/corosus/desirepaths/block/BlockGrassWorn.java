@@ -205,11 +205,11 @@ public class BlockGrassWorn extends Block implements IGrowable
                                     BlockPos posUp = pos.up();
                                     IBlockState stateUp = worldIn.getBlockState(posUp);
                                     if (stateUp.getMaterial() == Material.AIR) {
-                                        if (rand.nextBoolean()) {
+                                        if (rand.nextInt(20) == 0) {
+                                            Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
+                                        } else {
                                             worldIn.setBlockState(posUp,
                                                     Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
-                                        } else {
-                                            Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
                                         }
                                     }
                                 }
