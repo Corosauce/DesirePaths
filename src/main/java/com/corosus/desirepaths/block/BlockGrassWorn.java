@@ -397,4 +397,10 @@ public class BlockGrassWorn extends Block implements IGrowable
 
         return false;
     }
+
+    @Override
+    public boolean isToolEffective(String type, IBlockState state) {
+        if (type.equals("shovel")) return true;
+        return super.isToolEffective(type, state);
+    }
 }
