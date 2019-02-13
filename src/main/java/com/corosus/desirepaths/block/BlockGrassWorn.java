@@ -171,7 +171,7 @@ public class BlockGrassWorn extends Block implements IGrowable
                         } else if (state.getBlock() == DesirePaths.dirt_3) {
                             timeTo1StageOfRegrowth = 20 * 60 * 60 * 2;
                         }
-                        timeTo1StageOfRegrowth = 1;
+                        //timeTo1StageOfRegrowth = 1;
                         float oneStageOfRegrowth = 1F;
 
                         float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
