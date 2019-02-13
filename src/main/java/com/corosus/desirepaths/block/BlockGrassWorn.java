@@ -171,7 +171,7 @@ public class BlockGrassWorn extends Block implements IGrowable
                         } else if (state.getBlock() == DesirePaths.dirt_3) {
                             timeTo1StageOfRegrowth = 20 * 60 * 60 * 2;
                         }
-                        //timeTo1StageOfRegrowth = 1;
+                        timeTo1StageOfRegrowth = 1;
                         float oneStageOfRegrowth = 1F;
 
                         float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
@@ -201,16 +201,14 @@ public class BlockGrassWorn extends Block implements IGrowable
                             if (stateNew.getBlock() == Blocks.GRASS) {
 
                                 //random chance to regrow tallgrass above
-                                if (rand.nextInt(5) == 0) {
-                                    BlockPos posUp = pos.up();
-                                    IBlockState stateUp = worldIn.getBlockState(posUp);
-                                    if (stateUp.getMaterial() == Material.AIR) {
-                                        if (rand.nextInt(20) == 0) {
-                                            Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
-                                        } else {
-                                            worldIn.setBlockState(posUp,
-                                                    Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
-                                        }
+                                BlockPos posUp = pos.up();
+                                IBlockState stateUp = worldIn.getBlockState(posUp);
+                                if (stateUp.getMaterial() == Material.AIR) {
+                                    if (ConfigDesirePaths.chanceToRegrowDoubleGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowDoubleGrass) {
+                                        Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
+                                    } else if (ConfigDesirePaths.chanceToRegrowTallGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowTallGrass) {
+                                        worldIn.setBlockState(posUp,
+                                                Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
                                     }
                                 }
 

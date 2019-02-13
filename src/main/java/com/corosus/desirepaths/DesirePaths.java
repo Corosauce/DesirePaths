@@ -27,13 +27,17 @@ public class DesirePaths
     @SidedProxy(clientSide = "com.corosus.desirepaths.ClientProxy", serverSide = "com.corosus.desirepaths.CommonProxy")
     public static CommonProxy proxy;
 
+    public static ConfigDesirePathsDeveloper configDev;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
 
+        configDev = new ConfigDesirePathsDeveloper();
+
         ConfigMod.addConfigFile(event, new ConfigDesirePaths());
-        if (ConfigDesirePaths.enableAdvancedDeveloperConfigFiles) {
-            ConfigMod.addConfigFile(event, new ConfigDesirePathsDeveloper());
+        if (ConfigDesirePaths.enableAdvancedDeveloperConfigFiles && !ConfigMod.instance.configLookup.containsKey(DesirePaths.configDev.getRegistryName())) {
+            ConfigMod.addConfigFile(event, configDev);
         }
     }
 

@@ -19,7 +19,7 @@ public class ConfigDesirePathsDeveloper implements IConfigCategory {
 
     @Override
     public String getRegistryName() {
-        return DesirePaths.MODID + getName();
+        return DesirePaths.MODID + ":" + getName();
     }
 
     @Override

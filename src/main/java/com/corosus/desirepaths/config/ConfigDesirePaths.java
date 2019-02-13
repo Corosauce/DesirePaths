@@ -19,6 +19,12 @@ public class ConfigDesirePaths implements IConfigCategory {
     @ConfigComment("Use at own risk, will not support, requires game restart on change")
     public static boolean enableAdvancedDeveloperConfigFiles = false;
 
+    @ConfigComment("Chance to grow double grass when a worn grass block fully repairs to normal grass, 0 = 0% chance, 1 = 100% chance, 0.5 = 50% chance")
+    public static double chanceToRegrowDoubleGrass = 0.01;
+
+    @ConfigComment("Chance to grow tall grass when a worn grass block fully repairs to normal grass, 0 = 0% chance, 1 = 100% chance, 0.5 = 50% chance")
+    public static double chanceToRegrowTallGrass = 0.03;
+
     @Override
     public String getName() {
         return "DesirePaths";
@@ -26,7 +32,7 @@ public class ConfigDesirePaths implements IConfigCategory {
 
     @Override
     public String getRegistryName() {
-        return DesirePaths.MODID + getName();
+        return DesirePaths.MODID + ":" + getName();
     }
 
     @Override
@@ -41,8 +47,8 @@ public class ConfigDesirePaths implements IConfigCategory {
 
     @Override
     public void hookUpdatedValues() {
-        if (enableAdvancedDeveloperConfigFiles && !ConfigMod.instance.configLookup.containsKey("DesirePathsDeveloper")) {
-            ConfigMod.addConfigFile(null, new ConfigDesirePathsDeveloper());
+        if (enableAdvancedDeveloperConfigFiles && !ConfigMod.instance.configLookup.containsKey(DesirePaths.configDev.getRegistryName())) {
+            ConfigMod.addConfigFile(null, DesirePaths.configDev);
         }
     }
 }
