@@ -202,11 +202,13 @@ public class BlockGrassWorn extends Block implements IGrowable
 
                                 //random chance to regrow tallgrass above
                                 BlockPos posUp = pos.up();
-                                IBlockState stateUp = worldIn.getBlockState(posUp);
-                                if (stateUp.getMaterial() == Material.AIR) {
-                                    if (ConfigDesirePaths.chanceToRegrowDoubleGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowDoubleGrass) {
+                                if (ConfigDesirePaths.chanceToRegrowDoubleGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowDoubleGrass) {
+                                    //make sure theres 2 height of room, otherwise itll just replace block above without checking for air
+                                    if (Blocks.DOUBLE_PLANT.canPlaceBlockAt(worldIn, posUp)) {
                                         Blocks.DOUBLE_PLANT.placeAt(worldIn, posUp, BlockDoublePlant.EnumPlantType.GRASS, 3);
-                                    } else if (ConfigDesirePaths.chanceToRegrowTallGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowTallGrass) {
+                                    }
+                                } else if (ConfigDesirePaths.chanceToRegrowTallGrass > 0 && rand.nextDouble() < ConfigDesirePaths.chanceToRegrowTallGrass) {
+                                    if (Blocks.TALLGRASS.canPlaceBlockAt(worldIn, posUp)) {
                                         worldIn.setBlockState(posUp,
                                                 Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
                                     }
