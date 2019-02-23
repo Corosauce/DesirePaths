@@ -25,6 +25,9 @@ public class ConfigDesirePaths implements IConfigCategory {
     @ConfigComment("Chance to grow tall grass when a worn grass block fully repairs to normal grass, 0 = 0% chance, 1 = 100% chance, 0.5 = 50% chance")
     public static double chanceToRegrowTallGrass = 0.03;
 
+    @ConfigComment("Between random ticks, scales repair rate by the time between ticks. Setting this to false on a dedicated server might help prevent your paths from repairing while you arent playing")
+    public static boolean useWorldTimePassedForPathRepair = true;
+
     @Override
     public String getName() {
         return "DesirePaths";

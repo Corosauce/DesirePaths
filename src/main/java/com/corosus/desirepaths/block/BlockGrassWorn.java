@@ -56,7 +56,7 @@ public class BlockGrassWorn extends Block implements IGrowable
         this.setSoundType(SoundType.GROUND);
     }
 
-    //TODO: what about generic break? dont think its possible still, owell, maybe tick glock grid occasionally to find positions without BlockGrassWorn
+    //TODO: what about generic break? dont think its possible still, owell, maybe tick block grid occasionally to find positions without BlockGrassWorn
     //- or on placement of block, invalidate old data?
     @Override
     public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state) {
@@ -175,6 +175,11 @@ public class BlockGrassWorn extends Block implements IGrowable
                         float oneStageOfRegrowth = 1F;
 
                         float scale = (float) timeSinceLastTick / (float) timeTo1StageOfRegrowth;
+
+                        //override calculated scale if not using time scaled amount
+                        if (!ConfigDesirePaths.useWorldTimePassedForPathRepair) {
+                            scale = (float) ConfigDesirePathsDeveloper.repairAmountPerRandomTickNonTimeSimulated;
+                        }
 
                         float amountToAdjust = oneStageOfRegrowth * scale * (float)Math.max(ConfigDesirePathsDeveloper.pathRepairAmplifier, 0);
 

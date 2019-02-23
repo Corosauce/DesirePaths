@@ -12,6 +12,9 @@ public class ConfigDesirePathsDeveloper implements IConfigCategory {
     @ConfigComment("Warning: performance sensitive setting")
     public static double pathRepairAmplifier = 1D;
 
+    @ConfigComment("Only used if simulateTimePassedForPathRepair is false")
+    public static double repairAmountPerRandomTickNonTimeSimulated = 0.05D;
+
     @Override
     public String getName() {
         return "DesirePathsDeveloper";
