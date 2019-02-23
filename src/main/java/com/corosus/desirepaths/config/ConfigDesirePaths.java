@@ -16,7 +16,7 @@ public class ConfigDesirePaths implements IConfigCategory {
     @ConfigComment("Makes sheep wear down paths at a slower rate, to help them still have grass to eat")
     public static double sheepPathWearAmplifier = 0.1D;
 
-    @ConfigComment("Use at own risk, will not support, requires game restart on change")
+    @ConfigComment("Use at own risk, will not support")
     public static boolean enableAdvancedDeveloperConfigFiles = false;
 
     @ConfigComment("Chance to grow double grass when a worn grass block fully repairs to normal grass, 0 = 0% chance, 1 = 100% chance, 0.5 = 50% chance")
