@@ -59,7 +59,7 @@ public class ClientProxy extends CommonProxy
 
         //fallback on null just in case
         if (blockColorizer == null) {
-            blockColorizer = blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+            blockColorizer = (state, worldIn, pos, tintIndex) -> worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
         }
 
         blockColors.registerBlockColorHandler(blockColorizer, DesirePaths.dirt_1, DesirePaths.dirt_2, DesirePaths.dirt_3,
